@@ -1,9 +1,12 @@
-# Uncomment if we want to test a specific commit, or a specific branch
+# ------ a specific commit ------
 # astroquery @ git+https://github.com/eso/astroquery.git@COMMIT_HASH
-# astroquery @ git+https://github.com/eso/astroquery.git@BRANCH_NAME
 
-# Latest pre-release of astroquery
-astroquery==0.4.12.dev10885
+# ------ a specific branch ------
+astroquery @ git+https://github.com/eso/astroquery.git@develop-catalogues
+
+# ------ official astroquery (pre-)release ------
+# astroquery==0.4.12.dev10885
+
 astropy
 numpy
 matplotlib
