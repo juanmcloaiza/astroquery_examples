@@ -1,0 +1,51 @@
+name: Test notebooks
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.find.outputs.matrix }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: find
+        shell: bash
+        run: |
+          python <<'EOF'
+          import json
+          from pathlib import Path
+
+          notebooks = sorted(str(p) for p in Path(".").rglob("*.ipynb"))
+
+          with open("matrix.json", "w") as f:
+              json.dump({"notebook": notebooks}, f)
+          EOF
+
+          echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: discover
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.discover.outputs.matrix) }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r requirements.txt
+      - run: pip install pytest nbmake
+
+      - name: Execute ${{ matrix.notebook }}
+        run: |
+          pytest --nbmake "${{ matrix.notebook }}"
