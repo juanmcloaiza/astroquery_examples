@@ -17,5 +17,4 @@ pyvo
 tqdm
 PyAstronomy
 astral
-ESOAsg
 spherical-geometry
