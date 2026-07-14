@@ -20,7 +20,13 @@ jobs:
           import json
           from pathlib import Path
 
-          notebooks = sorted(str(p) for p in Path(".").rglob("*.ipynb"))
+          notebooks = []
+
+          for p in sorted(Path(".").rglob("*.ipynb")):
+              notebooks.append({
+                  "notebook": str(p),
+                  "workdir": str(p.parent),
+              })
 
           with open("matrix.json", "w") as f:
               json.dump({"notebook": notebooks}, f)
@@ -46,9 +52,12 @@ jobs:
       - run: pip install -r requirements.txt
       - run: pip install pytest nbmake
 
-      - name: Create data directory
+      - name: Create root data directory
         run: mkdir -p data
 
-      - name: Execute ${{ matrix.notebook }}
+      - name: Create notebook data directory
+        run: mkdir -p "${{ matrix.notebook.workdir }}/data"
+
+      - name: Execute ${{ matrix.notebook.notebook }}
         run: |
-          pytest --nbmake "${{ matrix.notebook }}"
+          pytest --nbmake "${{ matrix.notebook.notebook }}"
