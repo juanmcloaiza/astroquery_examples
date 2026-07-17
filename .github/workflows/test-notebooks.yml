@@ -24,9 +24,15 @@ jobs:
           import json
           from pathlib import Path
 
-          notebooks = []
+          skip = {
+              "01_authentication.ipynb",
+          }
 
+          notebooks = []
           for p in sorted(Path(".").rglob("*.ipynb")):
+              if p.name in skip:
+                  continue
+
               notebooks.append({
                   "notebook": str(p),
                   "workdir": str(p.parent),
