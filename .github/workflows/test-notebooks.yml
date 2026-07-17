@@ -1,0 +1,67 @@
+name: Test notebooks
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "0 0 * * *"
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.find.outputs.matrix }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - id: find
+        shell: bash
+        run: |
+          python <<'EOF'
+          import json
+          from pathlib import Path
+
+          notebooks = []
+
+          for p in sorted(Path(".").rglob("*.ipynb")):
+              notebooks.append({
+                  "notebook": str(p),
+                  "workdir": str(p.parent),
+              })
+
+          with open("matrix.json", "w") as f:
+              json.dump({"notebook": notebooks}, f)
+          EOF
+
+          echo "matrix=$(cat matrix.json)" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: discover
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.discover.outputs.matrix) }}
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+
+      - run: pip install -r requirements.txt
+      - run: pip install pytest nbmake
+
+      - name: Create root data directory
+        run: mkdir -p data
+
+      - name: Create notebook data directory
+        run: mkdir -p "${{ matrix.notebook.workdir }}/data"
+
+      - name: Execute ${{ matrix.notebook.notebook }}
+        run: |
+          pytest --nbmake "${{ matrix.notebook.notebook }}"
