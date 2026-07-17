@@ -71,4 +71,9 @@ jobs:
 
       - name: Execute ${{ matrix.notebook.notebook }}
         run: |
-          pytest --nbmake --nbmake-timeout=900 "${{ matrix.notebook.notebook }}"
+          # Retry five times for flaky connections
+          for i in 1 2 3 4 5; do
+            pytest --nbmake --nbmake-timeout=900 "${{ matrix.notebook.notebook }}" && exit 0
+            sleep 20
+          done
+          exit 1
