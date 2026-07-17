@@ -21,3 +21,4 @@ tqdm
 PyAstronomy
 astral
 spherical-geometry
+healpy
