@@ -1,0 +1,23 @@
+# ------ a specific commit ------
+# astroquery @ git+https://github.com/eso/astroquery.git@COMMIT_HASH
+
+# ------ a specific branch ------
+astroquery @ git+https://github.com/eso/astroquery.git@develop-catalogues
+
+# ------ official astroquery (pre-)release ------
+# astroquery==0.4.12.dev10885
+
+astropy
+numpy
+matplotlib
+pandas
+scipy
+requests
+Pillow
+ipywidgets
+ipyaladin
+pyvo
+tqdm
+PyAstronomy
+astral
+spherical-geometry

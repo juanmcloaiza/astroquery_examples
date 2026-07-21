@@ -34,12 +34,6 @@ def _optional_spherical_polygon():
     except ImportError:
         pass
 
-    try:
-        from ESOAsg.ancillary.polygons import SphericalPolygon  # type: ignore
-        return SphericalPolygon
-    except ImportError:
-        return None
-
 
 def download_gw_bayestar(superevent_name: str, output_dir: str | Path = "./data",
                          file_name: str = "bayestar.fits.gz") -> Path:
